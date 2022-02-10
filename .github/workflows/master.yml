@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm run build
+        run: npm run build -- --base-href=/previsao-tempo
 #      - name: Test
 #        run: npm run test
       - name: Archive build
