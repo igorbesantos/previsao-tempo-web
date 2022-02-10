@@ -50,4 +50,5 @@ jobs:
           server: ftp.ibs.dev.br
           username: ${{ secrets.ftp_username }}
           password: ${{ secrets.ftp_password }}
+          local-dir: ./deploy_dist/
           server-dir: /staging.app.ibs.dev.br/previsao-tempo-web/
