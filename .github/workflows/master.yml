@@ -1,20 +1,53 @@
+name: 🚀 Deploy on push (master)
 on:
   push:
     branches:
       - master
-name: 🚀 Deploy website on push
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: Checkout
         uses: actions/checkout@v2
-
-      - name: 📂 Sync files
+      - name: Use Node 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+#      - name: Test
+#        run: npm run test
+      - name: Archive build
+        if: success()
+        uses: actions/upload-artifact@v1
+        with:
+          name: deploy_dist
+          path: dist
+#      - name: Archive code coverage result
+#        if: success()
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: deploy_coverage
+#          path: coverage
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Download build
+        uses: actions/download-artifact@v1
+        with:
+          name: deploy_dist
+      - name: FTP Sync
         uses: SamKirkland/FTP-Deploy-Action@4.2.0
         with:
           server: ftp.ibs.dev.br
           username: ${{ secrets.ftp_username }}
           password: ${{ secrets.ftp_password }}
+          local-dir: ./deploy_dist/previsao-tempo-web/
           server-dir: /app.ibs.dev.br/previsao-tempo-web/
